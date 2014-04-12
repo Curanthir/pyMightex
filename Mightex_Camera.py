@@ -1,7 +1,7 @@
 # Mightex Python Program
 # Joshua Brake
 
-# Importing Libraries
+# Importing libraries
 import usb.core
 import usb.util
 import sys
