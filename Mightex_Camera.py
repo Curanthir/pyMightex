@@ -58,7 +58,7 @@ class Arduino:
 			
 # Camera class to control Mightex SCE-BG04-U CMOS Camera
 class Camera:
-	def __init__(self,res=(752,480),exposure_time=0.05,gain=8,fps=10):
+	def __init__(self,res=(752,480),exposure_time=1,gain=8,fps=10):
 		
 		self.dev = usb.core.find(idVendor=0x04B4, idProduct=0x0228)
 		
@@ -226,14 +226,27 @@ if __name__ == "__main__":
 	directory = createworkingdir(foldername)
 	
 	print("How many frames?")
-	numframes = int(raw_input())
+	numframes = raw_input()
 	print("----------------------")
 	
-	for i in xrange(0,numframes):
-		currenttime = time.time()-starttime
-		ldnum = i%3
-		imagetag = arduino.turn_on_laser_diode(ldnum)# + "_" + '%08.2f'%currenttime
-		print("Got frame #" + str(i) +"\n")
+	if numframes == 'go':
+		i = 0
+		while True:
+			currenttime = time.time()-starttime
+			ldnum = i%3
+			imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
+			print("Got frame #" + str(i) +"\n")
 		
-		img = camera.get_frame()
-		camera.saveimage(directory,i,imagetag,img)	
+			img = camera.get_frame()
+			camera.saveimage(directory,i,imagetag,img)
+			i +=1
+		
+	else:
+		for i in xrange(0,int(numframes)):
+			currenttime = time.time()-starttime
+			ldnum = i%3
+			imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
+			print("Got frame #" + str(i) +"\n")
+		
+			img = camera.get_frame()
+			camera.saveimage(directory,i,imagetag,img)	
