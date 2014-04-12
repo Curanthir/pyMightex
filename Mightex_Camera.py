@@ -18,25 +18,41 @@ colsize = 480
 arraySize = (rowsize*colsize)/2
 loop = arraySize/512
 starttime = time.time()
-
-def enableArduino():
-	print('Arduino enable? [1/0]')
-	arduinoEnableInput = input()
-	if arduinoEnableInput == 1:
-		arduinoEnable = True
-	else:
-		arduinoEnable = False
+		
+class Arduino:
+	def __init__(self):
+		self.arduinoenable()
 	
-
-	#Arduino Initialized
-	if arduinoEnable is True:
-		ser = serial.Serial("COM7",9600)
-		serin = ser.readline()
-		print serin
-		ser.write("0 0 0 ")
+	def arduinoenable(self):
+		print('Arduino enable? [1/0]')
+		arduinoEnableInput = input()
+		if arduinoEnableInput == 1:
+			arduinoStatus = True
+		else:
+			arduinoStatus = False
+		
+		if arduinoStatus is True:
+			ser = self.serial.Serial('COM7',9600)
+			serin = self.ser.readline()
+			print serin
+			self.ser.write('0 0 0 ')
+		return arduinoStatus
+	
+	def turn_on_laser_diode(self,ldnum):
+		if ldnum == 0:
+			self.ser.write('0 0 1')
+			imagetag = '3'
+		if ldnum == 1:
+			self.ser.write('1 0 0')
+			imagetag = '1'
+		if ldnum == 2:
+			self.ser.write('0 1 0')
+			imagetag = '2'
+			
+			
 		
 class Camera:
-	def __init__(self,res=(752,480),exposure_time=100,gain=8,fps=10):
+	def __init__(self,res=(752,480),exposure_time=0.05,gain=8,fps=10):
 		
 		self.dev = usb.core.find(idVendor=0x04B4, idProduct=0x0228)
 		
@@ -107,7 +123,7 @@ class Camera:
 	def set_exposure_time(self,time):
 		time_mult = int(time/0.05)
 		time_mult = self.int2hexlist(time_mult)
-		print("Exposure time set to: " + str(time_mult) + "*0.05ms")
+		#print("Exposure time set to: " + str(time_mult) + "*0.05ms")
 		self.dev.write(0x01, [0x63, 0x02, time_mult[0],time_mult[1]])
 		self.exposure_time = float(time)
 		self.set_fps(float(1.0/(self.exposure_time/1000)))
@@ -187,8 +203,12 @@ class Camera:
 		return (hexlist[0] << 0x8 + hexlist[1])
 			
 if __name__ == "__main__":
+
+	arduino = Arduino()
 	camera = Camera()
+	print("How many frames?")
+	numframes = input()
 	
-	img = camera.get_frame()
-	camera.saveimage(1,'test',img)
-			
+	for i in xrange(0,numframes):
+		img = camera.get_frame()
+		camera.saveimage(i,'test',img)	
