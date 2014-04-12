@@ -11,7 +11,7 @@
 
 #define LD1 4  // Define pins for laser diode outputs
 #define LD2 7
-#define LD3 13
+#define LD3 11
 
 void setup()
 {
