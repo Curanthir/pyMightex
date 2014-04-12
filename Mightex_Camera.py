@@ -1,6 +1,7 @@
 # Mightex Python Program
 # Joshua Brake
-# Importing Libraries - using special ones for usb interaction
+
+# Importing Libraries
 import usb.core
 import usb.util
 import sys
@@ -18,7 +19,8 @@ colsize = 480
 arraySize = (rowsize*colsize)/2
 loop = arraySize/512
 starttime = time.time()
-		
+
+# Arduino class to control laser diodes
 class Arduino:
 	def __init__(self):
 		self.arduinoenable()
@@ -49,8 +51,7 @@ class Arduino:
 			self.ser.write('0 1 0')
 			imagetag = '2'
 			
-			
-		
+# Camera class to control Mightex SCE-BG04-U		
 class Camera:
 	def __init__(self,res=(752,480),exposure_time=0.05,gain=8,fps=10):
 		
