@@ -34,9 +34,9 @@ class Arduino:
 			arduinoStatus = False
 		
 		if arduinoStatus is True:
-			ser = self.serial.Serial('COM7',9600)
-			serin = self.ser.readline()
-			print serin
+			self.ser = serial.Serial('COM7',115200)
+			self.serin = self.ser.readline()
+			print self.serin
 			self.ser.write('0 0 0 ')
 		return arduinoStatus
 	
@@ -50,6 +50,8 @@ class Arduino:
 		if ldnum == 2:
 			self.ser.write('0 1 0')
 			imagetag = '2'
+		return imagetag
+
 			
 # Camera class to control Mightex SCE-BG04-U CMOS Camera
 class Camera:
@@ -211,5 +213,9 @@ if __name__ == "__main__":
 	numframes = input()
 	
 	for i in xrange(0,numframes):
+		ldnum = i%3
+		imagetag = arduino.turn_on_laser_diode(ldnum)
+		time.sleep(2)
+		
 		img = camera.get_frame()
-		camera.saveimage(i,'test',img)	
+		camera.saveimage(i,imagetag,img)	
