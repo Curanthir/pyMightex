@@ -22,7 +22,6 @@ void setup()
   pinMode(LD3,OUTPUT);
   
   Serial.println("Arduino Laser Diode Controller Initialized!"); // Initialization message
-  Serial.println();
 }
 
 void loop()
@@ -52,7 +51,8 @@ void loop()
     
     if(LD1val==1)
     {
-    digitalWrite(LD1, LOW); 
+    digitalWrite(LD1, LOW);
+    Serial.println("780 nm");
     }
     else
     {
@@ -61,6 +61,7 @@ void loop()
     if(LD2val==1)
     {
     digitalWrite(LD2, LOW);
+    Serial.println("830 nm");
     }
     else
     {
@@ -69,6 +70,7 @@ void loop()
     if(LD3val==1)
     {
     digitalWrite(LD3, LOW);
+    Serial.println("850 nm");
     }
     else
     {

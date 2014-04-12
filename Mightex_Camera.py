@@ -12,6 +12,7 @@ import serial
 import numpy as np
 from array import *
 import time as t
+import os
 
 
 rowsize = 752
@@ -26,9 +27,9 @@ class Arduino:
 		self.arduinoenable()
 	
 	def arduinoenable(self):
-		print('Arduino enable? [1/0]')
-		arduinoEnableInput = input()
-		if arduinoEnableInput == 1:
+		print('Arduino enable? [y/n]')
+		arduinoEnableInput = raw_input()
+		if arduinoEnableInput == "y" or "yes":
 			arduinoStatus = True
 		else:
 			arduinoStatus = False
@@ -36,7 +37,7 @@ class Arduino:
 		if arduinoStatus is True:
 			self.ser = serial.Serial('COM7',115200)
 			self.serin = self.ser.readline()
-			print self.serin
+			print self.serin.strip('\n')
 			self.ser.write('0 0 0')
 		return arduinoStatus
 	
@@ -50,6 +51,8 @@ class Arduino:
 		if ldnum == 2:
 			self.ser.write('0 0 1')
 			imagetag = '3'
+		self.writeconfirmation = self.ser.readline()
+		print self.writeconfirmation.strip('\n')
 		return imagetag
 
 			
@@ -181,8 +184,8 @@ class Camera:
 		image = np.reshape(SSAT,[480,752])
 		return image
 			
-	def saveimage(self,framenum,imagetag,image):
-		filename = str(framenum)+"_" + imagetag
+	def saveimage(self,directory,framenum,imagetag,image):
+		filename = directory + "\\" + str(framenum)+"_" + imagetag
 		f = open(filename + '.png','wb')
 		w = png.Writer(752,480,greyscale=True,bitdepth=8)
 		w.write(f,image)
@@ -204,19 +207,33 @@ class Camera:
 			
 	def hexlist2int(self,hexlist):
 		return (hexlist[0] << 0x8 + hexlist[1])
+		
+def createworkingdir(foldername):
+	currentdir = os.getcwd()
+	directory = currentdir + "\\" + foldername
+	
+	if not os.path.exists(directory):
+		os.makedirs(directory)
+		
+	return directory
 			
 if __name__ == "__main__":
 
 	arduino = Arduino()
 	camera = Camera()
+	print("Folder name?")
+	foldername = raw_input()
+	directory = createworkingdir(foldername)
+	
 	print("How many frames?")
-	numframes = input()
+	numframes = int(raw_input())
+	print("----------------------")
 	
 	for i in xrange(0,numframes):
 		currenttime = time.time()-starttime
 		ldnum = i%3
-		imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
-		print("Got frame #" + str(i))
+		imagetag = arduino.turn_on_laser_diode(ldnum)# + "_" + '%08.2f'%currenttime
+		print("Got frame #" + str(i) +"\n")
 		
 		img = camera.get_frame()
-		camera.saveimage(i,imagetag,img)	
+		camera.saveimage(directory,i,imagetag,img)	
