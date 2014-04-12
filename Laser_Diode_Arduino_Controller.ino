@@ -81,68 +81,6 @@ void loop()
       digitalWrite(LD3, HIGH);
     }
     
-    Serial.print("Laser Diode 1 turned: ");  // Provide serial output indicating which lasers are ON and which are OFF.
-    if(LD1val==1)
-    {
-    Serial.println("ON.");
-    }
-    else
-    {
-      Serial.println("OFF.");
-    }
-    
-    Serial.print("Laser Diode 2 turned to: ");
-    if(LD2val==1)
-    {
-    Serial.println("ON.");
-    }
-    else
-    {
-      Serial.println("OFF.");
-    }
-    
-    Serial.print("Laser Diode 3 turned to: ");
-    if(LD3val==1)
-    {
-    Serial.println("ON.");
-    }
-    else
-    {
-      Serial.println("OFF.");
-    }
-    
-    Serial.println();
-  
-  delay(1000);
-  
-  float PM = analogRead(LD1PM);
-  PM = PM * 0.0048828125;
-  float CM = analogRead(LD1CM);
-  CM = CM * 0.0048828125;
-  Serial.print("LD1PM: ");
-  Serial.print(PM);
-  Serial.print(" LD1CM: ");
-  Serial.println(CM);
-  
-  PM = analogRead(LD2PM);
-  PM = PM * 0.0048828125;
-  CM = analogRead(LD2CM);
-  CM = CM * 0.0048828125;
-  Serial.print("LD2PM: ");
-  Serial.print(PM);
-  Serial.print(" LD2CM: ");
-  Serial.println(CM);
-  
-  PM = analogRead(LD3PM);
-  PM = PM * 0.0048828125;
-  CM = analogRead(LD3CM);
-  CM = CM * 0.0048828125;
-  Serial.print("LD3PM: ");
-  Serial.print(PM);
-  Serial.print(" LD3CM: ");
-  Serial.println(CM);
-  Serial.println("");
-  }
 }
 
 
