@@ -1,5 +1,5 @@
 # Mightex Python Program
-# Joshua Brake and Josue Ortiz
+# Joshua Brake
 # Importing Libraries - using special ones for usb interaction
 import usb.core
 import usb.util
