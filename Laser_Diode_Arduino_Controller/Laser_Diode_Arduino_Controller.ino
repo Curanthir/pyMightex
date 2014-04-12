@@ -74,7 +74,6 @@ void loop()
     {
       digitalWrite(LD3, HIGH);
     }
-    
   }
 }
 

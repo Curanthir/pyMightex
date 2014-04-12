@@ -37,19 +37,19 @@ class Arduino:
 			self.ser = serial.Serial('COM7',115200)
 			self.serin = self.ser.readline()
 			print self.serin
-			self.ser.write('0 0 0 ')
+			self.ser.write('0 0 0')
 		return arduinoStatus
 	
 	def turn_on_laser_diode(self,ldnum):
 		if ldnum == 0:
-			self.ser.write('0 0 1')
-			imagetag = '3'
-		if ldnum == 1:
 			self.ser.write('1 0 0')
 			imagetag = '1'
-		if ldnum == 2:
+		if ldnum == 1:
 			self.ser.write('0 1 0')
 			imagetag = '2'
+		if ldnum == 2:
+			self.ser.write('0 0 1')
+			imagetag = '3'
 		return imagetag
 
 			
@@ -213,9 +213,10 @@ if __name__ == "__main__":
 	numframes = input()
 	
 	for i in xrange(0,numframes):
+		currenttime = time.time()-starttime
 		ldnum = i%3
-		imagetag = arduino.turn_on_laser_diode(ldnum)
-		time.sleep(2)
+		imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
+		print("Got frame #" + str(i))
 		
 		img = camera.get_frame()
 		camera.saveimage(i,imagetag,img)	
