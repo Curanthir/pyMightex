@@ -51,7 +51,7 @@ class Arduino:
 			self.ser.write('0 1 0')
 			imagetag = '2'
 			
-# Camera class to control Mightex SCE-BG04-U		
+# Camera class to control Mightex SCE-BG04-U CMOS Camera
 class Camera:
 	def __init__(self,res=(752,480),exposure_time=0.05,gain=8,fps=10):
 		
