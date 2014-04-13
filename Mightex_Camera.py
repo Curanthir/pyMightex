@@ -21,25 +21,31 @@ arraySize = (rowsize*colsize)/2
 loop = arraySize/512
 starttime = time.time()
 
+def arduinoenable():
+	arduinoEnableInput = raw_input('Arduino enable? [y/n]: ')
+	arduinoEnableInput = arduinoEnableInput.lower()
+		
+	while arduinoEnableInput not in ['y','n']:
+		print("Invalid input. Please try again.")
+		arduinoEnableInput = raw_input('Arduino enable? [y/n]: ')
+		arduinoEnableInput = arduinoEnableInput.lower()
+		
+	if arduinoEnableInput == 'y':
+		arduinoStatus = True
+		print(arduinoEnableInput)
+	else:
+		arduinoStatus = False
+	
+	return arduinoStatus
+		
+
 # Arduino class to control laser diodes
 class Arduino:
 	def __init__(self):
-		self.arduinoenable()
-	
-	def arduinoenable(self):
-		print('Arduino enable? [y/n]')
-		arduinoEnableInput = raw_input()
-		if arduinoEnableInput == "y" or "yes":
-			arduinoStatus = True
-		else:
-			arduinoStatus = False
-		
-		if arduinoStatus is True:
-			self.ser = serial.Serial('COM7',115200)
-			self.serin = self.ser.readline()
-			print self.serin.strip('\n')
-			self.ser.write('0 0 0')
-		return arduinoStatus
+		self.ser = serial.Serial('COM7',115200)
+		self.serin = self.ser.readline()
+		print self.serin.strip('\n')
+		self.ser.write('0 0 0')
 	
 	def turn_on_laser_diode(self,ldnum):
 		if ldnum == 0:
@@ -185,7 +191,7 @@ class Camera:
 		return image
 			
 	def saveimage(self,directory,framenum,imagetag,image):
-		filename = directory + "\\" + str(framenum)+"_" + imagetag
+		filename = directory + os.sep + str(framenum)+"_" + imagetag
 		f = open(filename + '.png','wb')
 		w = png.Writer(752,480,greyscale=True,bitdepth=8)
 		w.write(f,image)
@@ -210,7 +216,7 @@ class Camera:
 		
 def createworkingdir(foldername):
 	currentdir = os.getcwd()
-	directory = currentdir + "\\" + foldername
+	directory = currentdir + os.sep + foldername
 	
 	if not os.path.exists(directory):
 		os.makedirs(directory)
@@ -219,7 +225,10 @@ def createworkingdir(foldername):
 			
 if __name__ == "__main__":
 
-	arduino = Arduino()
+	arduinoenabled = arduinoenable()
+	if arduinoenabled is True:
+		arduino = Arduino()
+		
 	camera = Camera()
 	print("Folder name?")
 	foldername = raw_input()
@@ -233,20 +242,27 @@ if __name__ == "__main__":
 		i = 0
 		while True:
 			currenttime = time.time()-starttime
-			ldnum = i%3
-			imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
-			print("Got frame #" + str(i) +"\n")
+			if arduinoenabled is True:
+				ldnum = i%3
+				imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
+			else:
+				imagetag = 'Camera_Only'
 		
 			img = camera.get_frame()
 			camera.saveimage(directory,i,imagetag,img)
+			print("Got frame #" + str(i) +"\n")
 			i +=1
 		
 	else:
 		for i in xrange(0,int(numframes)):
 			currenttime = time.time()-starttime
-			ldnum = i%3
-			imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
-			print("Got frame #" + str(i) +"\n")
-		
+			if arduinoenabled is True:
+				ldnum = i%3
+				imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
+				
+			else:
+				imagetag = 'Camera_Only'
+			
 			img = camera.get_frame()
-			camera.saveimage(directory,i,imagetag,img)	
+			camera.saveimage(directory,i,imagetag,img)
+			print("Got frame #" + str(i) +"\n")
