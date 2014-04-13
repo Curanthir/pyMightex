@@ -14,11 +14,6 @@ from array import *
 import time as t
 import os
 
-
-rowsize = 752
-colsize = 480
-arraySize = (rowsize*colsize)/2
-loop = arraySize/512
 starttime = time.time()
 
 def arduinoenable():
@@ -154,7 +149,7 @@ class Camera:
 		self.dev.write(0x01,[0x36,0x01,0x02])
 		
 	def get_frame(self):
-		img_len = self.res[0]*self.res[1]
+		img_len = self.res[0]*self.res[1]/2
 			
 		while True:
 			array1=[]
@@ -167,7 +162,7 @@ class Camera:
 			# Get Image Data - Asks for data to be prepared
 			self.dev.write(0x01, [0x34, 0x01, 0x01])
 			# By now data was ready so reading of data is begun
-			for x in xrange(0, loop+1):
+			for x in xrange(0, img_len/512+1):
 				array1.extend(self.dev.read(0x82,0x200))
 				array2.extend(self.dev.read(0x86,0x200))
 			
@@ -181,19 +176,19 @@ class Camera:
 			
 		SSAT = []
 
-		for x in xrange(0,colsize/2):
-			arrayStart = x*rowsize
-			arrayEnd = arrayStart+rowsize
+		for x in xrange(0,self.res[1]/2):
+			arrayStart = x*self.res[0]
+			arrayEnd = arrayStart+self.res[0]
 			SSAT.extend(array1[arrayStart:arrayEnd])
 			SSAT.extend(array2[arrayStart:arrayEnd])	
 	
-		image = np.reshape(SSAT,[480,752])
+		image = np.reshape(SSAT,[self.res[1],self.res[0]])
 		return image
 			
 	def saveimage(self,directory,framenum,imagetag,image):
 		filename = directory + os.sep + str(framenum)+"_" + imagetag
 		f = open(filename + '.png','wb')
-		w = png.Writer(752,480,greyscale=True,bitdepth=8)
+		w = png.Writer(self.res[0],self.res[1],greyscale=True,bitdepth=8)
 		w.write(f,image)
 		f.close()
 			
