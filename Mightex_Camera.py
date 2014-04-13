@@ -14,6 +14,7 @@ from array import *
 import time as t
 import os
 
+# Set start time to timestamp frames
 starttime = time.time()
 
 def arduinoenable():
@@ -107,7 +108,7 @@ class Camera:
 		res = self.dev.read(0x81,0x05)
 		return res.tolist()
 		
-	def set_mode(self,mode=0x00):
+	def set_mode(self,mode):
 		self.dev.write(0x01, [0x30,0x01,mode])
 			
 	def set_resolution(self,res):
@@ -166,7 +167,6 @@ class Camera:
 				array1.extend(self.dev.read(0x82,0x200))
 				array2.extend(self.dev.read(0x86,0x200))
 			
-			timestamp = t.time() - starttime
 			# Get Current Frame Property
 			self.dev.write(0x01, [0x33, 0x01, 0x00])
 			frameP = self.dev.read(0x81, 0x18)
