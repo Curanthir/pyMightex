@@ -14,7 +14,7 @@ from array import *
 import time as t
 import os
 
-# Set start time to timestamp frames
+# Set start time to time stamp frames
 starttime = time.time()
 
 def arduinoenable():
