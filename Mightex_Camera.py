@@ -13,6 +13,8 @@ import numpy as np
 from array import *
 import time as t
 import os
+import pwd
+import grp
 
 # Set start time to time stamp frames
 starttime = time.time()
@@ -60,7 +62,7 @@ class Arduino:
 			
 # Camera class to control Mightex SCE-BG04-U CMOS Camera
 class Camera:
-	def __init__(self,res=(752,480),exposure_time=1,gain=8,fps=10):
+	def __init__(self,res=(752,480),exposure_time=0.05,gain=8,fps=10):
 		
 		self.dev = usb.core.find(idVendor=0x04B4, idProduct=0x0228)
 		
@@ -80,8 +82,6 @@ class Camera:
 		r = self.dev.write(0x01,[0x21])
 		r = self.dev.read(0x81,0x2E)
 
-
-			
 		self.get_device_info()
 		
 		self.set_mode(0x00)
@@ -96,7 +96,6 @@ class Camera:
 		self.set_sensor_Hblanking()
 		self.set_main_clock_freq()
 		time.sleep(2)
-		
 		
 	def get_device_info(self):
 		self.dev.write(0x01,[0x21,0x01,0x00])
@@ -214,8 +213,14 @@ def createworkingdir(foldername):
 	directory = currentdir + os.sep + foldername
 	
 	if not os.path.exists(directory):
-		os.makedirs(directory)
-		
+		os.mkdir(directory)
+	
+	uid = pwd.getpwnam("nobody").pw_uid
+        gid = grp.getgrnam("nogroup").gr_gid
+
+	os.chmod(directory,0777)
+        os.chown(directory,uid,gid)
+
 	return directory
 			
 if __name__ == "__main__":
