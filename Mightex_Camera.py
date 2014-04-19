@@ -62,7 +62,7 @@ class Arduino:
 			
 # Camera class to control Mightex SCE-BG04-U CMOS Camera
 class Camera:
-	def __init__(self,res=(752,480),exposure_time=0.05,gain=8,fps=10):
+	def __init__(self,res=(752,480),exposure_time=4,gain=8,fps=10):
 		
 		self.dev = usb.core.find(idVendor=0x04B4, idProduct=0x0228)
 		
@@ -208,6 +208,32 @@ class Camera:
 	def hexlist2int(self,hexlist):
 		return (hexlist[0] << 0x8 + hexlist[1])
 		
+	def analyzeframe(self,image):
+		imavg = np.average(image)
+		immax = np.amax(image)
+		print('Image average = ' + str(imavg) + ' ' + 'Image maximum = ' + str(immax))
+		if immax == 255:
+			saturation_flag = -1
+			print('Image saturated!')
+		else:
+			saturation_flag = 0
+		#return imavg, saturation_flag
+		
+	def getandsaveframe(self,directory):
+		currenttime = time.time()-starttime
+		if arduinoenabled is True:
+			ldnum = i%3
+			imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
+				
+		else:
+			imagetag = 'Camera_Only'
+		
+		img = camera.get_frame()
+		camera.saveimage(directory,i,imagetag,img)
+		print("Got frame #" + str(i))
+		self.analyzeframe(img)
+
+		
 def createworkingdir(foldername):
 	currentdir = os.getcwd()
 	directory = currentdir + os.sep + foldername
@@ -222,6 +248,16 @@ def createworkingdir(foldername):
         os.chown(directory,uid,gid)
 
 	return directory
+
+def getuserinput():
+	print("Folder name?")
+	foldername = raw_input()
+	directory = createworkingdir(foldername)
+	
+	print("How many frames?")
+	numframes = raw_input()
+	print("----------------------")
+	return numframes,directory
 			
 if __name__ == "__main__":
 
@@ -230,39 +266,14 @@ if __name__ == "__main__":
 		arduino = Arduino()
 		
 	camera = Camera()
-	print("Folder name?")
-	foldername = raw_input()
-	directory = createworkingdir(foldername)
-	
-	print("How many frames?")
-	numframes = raw_input()
-	print("----------------------")
+	[numframes,directory] = getuserinput()
 	
 	if numframes == 'go':
 		i = 0
 		while True:
-			currenttime = time.time()-starttime
-			if arduinoenabled is True:
-				ldnum = i%3
-				imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
-			else:
-				imagetag = 'Camera_Only'
-		
-			img = camera.get_frame()
-			camera.saveimage(directory,i,imagetag,img)
-			print("Got frame #" + str(i) +"\n")
+			camera.getandsaveframe(directory)
 			i +=1
 		
 	else:
 		for i in xrange(0,int(numframes)):
-			currenttime = time.time()-starttime
-			if arduinoenabled is True:
-				ldnum = i%3
-				imagetag = arduino.turn_on_laser_diode(ldnum) + "_" + '%08.2f'%currenttime
-				
-			else:
-				imagetag = 'Camera_Only'
-			
-			img = camera.get_frame()
-			camera.saveimage(directory,i,imagetag,img)
-			print("Got frame #" + str(i) +"\n")
+			camera.getandsaveframe(directory)
