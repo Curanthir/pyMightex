@@ -16,7 +16,7 @@ import time as t
 import os
 import sys
 
-if(sys.platform=='posix'):
+if(sys.platform!='win32'):
 	import pwd
 	import grp
 
@@ -193,7 +193,7 @@ class Camera:
 		f = open(filename,'wb')
 		w = png.Writer(self.res[0],self.res[1],greyscale=True,bitdepth=8)
 		w.write(f,image)
-		if(sys.platform=='posix'):
+		if(sys.platform!='win32'):
 			setpermissions(filename)
 		f.close()
 			
