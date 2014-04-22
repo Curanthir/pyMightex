@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # Mightex Python Program
 # Joshua Brake
 
@@ -185,10 +186,11 @@ class Camera:
 		return image
 			
 	def saveimage(self,directory,framenum,imagetag,image):
-		filename = directory + os.sep + str(framenum)+"_" + imagetag
-		f = open(filename + '.png','wb')
+		filename = directory + os.sep + str(framenum)+"_" + imagetag + '.png'
+		f = open(filename,'wb')
 		w = png.Writer(self.res[0],self.res[1],greyscale=True,bitdepth=8)
 		w.write(f,image)
+		setpermissions(filename)
 		f.close()
 			
 	def write(self,command,parameters):
@@ -241,13 +243,16 @@ def createworkingdir(foldername):
 	if not os.path.exists(directory):
 		os.mkdir(directory)
 	
+	setpermissions(directory)
+	
+	return directory
+
+def setpermissions(path):
 	uid = pwd.getpwnam("nobody").pw_uid
         gid = grp.getgrnam("nogroup").gr_gid
 
-	os.chmod(directory,0777)
-        os.chown(directory,uid,gid)
-
-	return directory
+	os.chmod(path,0777)
+        os.chown(path,uid,gid)
 
 def getuserinput():
 	print("Folder name?")
