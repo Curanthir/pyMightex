@@ -14,8 +14,11 @@ import numpy as np
 from array import *
 import time as t
 import os
-import pwd
-import grp
+import sys
+
+if(sys.platform=='posix'):
+	import pwd
+	import grp
 
 # Set start time to time stamp frames
 starttime = time.time()
@@ -190,7 +193,8 @@ class Camera:
 		f = open(filename,'wb')
 		w = png.Writer(self.res[0],self.res[1],greyscale=True,bitdepth=8)
 		w.write(f,image)
-		setpermissions(filename)
+		if(sys.platform=='posix'):
+			setpermissions(filename)
 		f.close()
 			
 	def write(self,command,parameters):
@@ -248,10 +252,10 @@ def createworkingdir(foldername):
 	return directory
 
 def setpermissions(path):
-	uid = pwd.getpwnam("nobody").pw_uid
-        gid = grp.getgrnam("nogroup").gr_gid
+	uid = pwd.getpwnam("joshbrake").pw_uid
+        gid = grp.getgrnam("user").gr_gid
 
-	os.chmod(path,0777)
+	os.chmod(path,0755)
         os.chown(path,uid,gid)
 
 def getuserinput():
