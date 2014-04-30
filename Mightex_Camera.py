@@ -44,7 +44,7 @@ def arduinoenable():
 # Arduino class to control laser diodes
 class Arduino:
 	def __init__(self):
-		self.ser = serial.Serial('COM7',115200)
+		self.ser = serial.Serial('/dev/ttyACM0',115200)
 		self.serin = self.ser.readline()
 		print self.serin.strip('\n')
 		self.ser.write('0 0 0')
@@ -66,7 +66,7 @@ class Arduino:
 			
 # Camera class to control Mightex SCE-BG04-U CMOS Camera
 class Camera:
-	def __init__(self,res=(752,480),exposure_time=4,gain=8,fps=10):
+	def __init__(self,res=(752,480),exposure_time=0.25,gain=8,fps=10):
 		
 		self.dev = usb.core.find(idVendor=0x04B4, idProduct=0x0228)
 		
