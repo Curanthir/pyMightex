@@ -246,9 +246,8 @@ def createworkingdir(foldername):
 	
 	if not os.path.exists(directory):
 		os.mkdir(directory)
-	
-	setpermissions(directory)
-	
+	if(sys.platform!='win32'):
+		setpermissions(directory)
 	return directory
 
 def setpermissions(path):
