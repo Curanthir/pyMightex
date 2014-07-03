@@ -1,7 +1,0 @@
-//Rotary Filter Array Control Program
-//Jonathan Hebert with reference to Josh Brake
-//7/3/2014
-
-/*This program uses the same basic framework as the previous laser conrol programs;
-however it uses a servo to control a rotating filter array. teh filter is attached to the servo so that 
-at 180 degrees the center filter is straight up. The filter currently rotates according to serial commands*/
